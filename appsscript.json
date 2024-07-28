@@ -1,7 +1,22 @@
 {
-  "timeZone": "America/New_York",
-  "dependencies": {
-  },
+  "timeZone": "Asia/Tokyo",
   "exceptionLogging": "STACKDRIVER",
-  "runtimeVersion": "V8"
+  "runtimeVersion": "V8",
+  "dependencies": {
+    "enabledAdvancedServices": [
+      {
+        "userSymbol": "Drive",
+        "serviceId": "drive",
+        "version": "v3"
+      }
+    ],
+    "libraries": [
+      {
+        "userSymbol": "GhRepoFiles",
+        "version": "0",
+        "libraryId": "18A853Hnf2Lp2U36tGLHsuoxxVXzmlQ-dLimoPQT2jlsr7sDzdLTJ3Qyw",
+        "developmentMode": true
+      }
+    ]
+  }
 }
