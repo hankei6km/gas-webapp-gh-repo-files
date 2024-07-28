@@ -1,12 +1,12 @@
 {
-  "name": "@hankei6km/my-starter-gas-lib-ts",
-  "version": "0.13.0",
-  "description": "My Starter to make Google Apps Script library by using TypeScript",
+  "name": "@hankei6km/webapp-gh-repo-file",
+  "version": "0.0.0",
+  "description": "ウェブアプリ",
   "author": "hankei6km <hankei6km@gmail.com> (https://github.com/hankei6km)",
   "license": "MIT",
   "repository": {
     "type": "git",
-    "url": "git://github.com/hankei6km/gas-md2html.git"
+    "url": "git://github.com/hankei6km/webapp-gh-repo-file.git"
   },
   "bugs": {
     "url": "https://github.com/hankei6km/gas-md2html/issues"
