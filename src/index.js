@@ -8,6 +8,6 @@
 
 'use strict'
 
-function a(){
-    return _entry_point_.GhRepoFiles.a()
+function chk() {
+  return _entry_point_.WebappGhRepoFiles.chk()
 }
