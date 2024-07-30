@@ -17,7 +17,8 @@ const result = await esbuild.build({
   metafile: true,
   target: 'ES2019',
   tsconfig: 'tsconfig.build.json',
-  logLevel: 'info'
+  logLevel: 'info',
+  external: ['@hankei6km/gas-gh-repo-files']
 })
 
 const baseDir = path.dirname(fileURLToPath(import.meta.url))

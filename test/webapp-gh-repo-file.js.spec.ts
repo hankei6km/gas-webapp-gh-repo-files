@@ -2,6 +2,6 @@ import { WebappGhRepoFiles } from '../src/webapp-gh-repo-file.js'
 
 describe('dummy', () => {
   it('dummy', () => {
-    expect(true).toBeTruthy()
+    expect(WebappGhRepoFiles.chk).toBeInstanceOf(Function)
   })
 })

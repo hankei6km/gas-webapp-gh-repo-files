@@ -7,3 +7,7 @@
  */
 
 'use strict'
+
+function a(){
+    return _entry_point_.GhRepoFiles.a()
+}
