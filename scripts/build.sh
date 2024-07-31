@@ -26,5 +26,7 @@ cp LICENSE "${BUILD_DIR}/LICENSE.txt"
 sed -e 's/^export \(declare namespace\)/\1/' -- "${BUILD_DIR}/src/${BASENAME}.d.ts" > "index.d.ts"
 rm "${BUILD_DIR}/src/${BASENAME}.d.ts"
 
+cp -r static* "${BUILD_DIR}/"
+
 # 作業用ファイルなどを削除.
 rimraf "${OUT_MAIN}" "${BUILD_DIR}/src" "${BUILD_DIR}/test" "${BUILD_DIR}/src/main.js.map" 
