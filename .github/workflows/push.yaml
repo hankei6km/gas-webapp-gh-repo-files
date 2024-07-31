@@ -59,7 +59,9 @@ jobs:
           CLIENT_SECRET: ${{ secrets.CLIENT_SECRET }}
 
       - name: Push source files to gas project
-        run: npm run push
+        run: |
+          npm run push
+          npm run deploy
 
       # 念のため実行.
       - name: Cleanup files for clasp
