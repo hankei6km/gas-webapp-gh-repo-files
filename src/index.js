@@ -11,6 +11,15 @@
 function chk() {
   return _entry_point_.WebappGhRepoFiles.chk()
 }
+
+/**
+ * static path を取得する。とりあえず作成、あとでライブラリ側に移すかも。
+ */
+function staticPath_(u) {
+  // node:path 使う方法ない？
+  return `build/static/${u}`
+}
+
 function doGet() {
-  return HtmlService.createHtmlOutputFromFile('static/index.html')
+  return HtmlService.createHtmlOutputFromFile(staticPath_('index.html'))
 }
