@@ -11,3 +11,6 @@
 function chk() {
   return _entry_point_.WebappGhRepoFiles.chk()
 }
+function doGet() {
+  return HtmlService.createHtmlOutputFromFile('static/index.html')
+}
