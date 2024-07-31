@@ -1,0 +1,293 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <title>My Website</title>
+    <meta charset="UTF-8" />
+    <!--https://qiita.com/takatama/items/96c9fa5fbf0fe18427a3 -->
+    <style>
+      <?!= HtmlService.createHtmlOutputFromFile(staticPath_('index.css.html')).getContent(); ?>
+    </style>
+  </head>
+  <body class="bg-gray-100">
+    <div class="flex justify-center">
+      <div class="w-[640px] m-4">
+        <h1 class="text-2xl font-bold mb-4">
+          <?= pageTitle_(); ?>
+        </h1>
+        <form class="mb-4">
+          <div class="mb-2 flex flex-row justify-between">
+            <input
+              type="text"
+              class="w-full px-2 py-1 border border-gray-300 rounded"
+              placeholder="URL(or owner/repo/ref)"
+              id="repo-url"
+            />
+          </div>
+          <details
+            class="mb-4 px-2 py-2 bg-gray-200 rounded-md"
+            id="append-info"
+          >
+            <summary class="cursor-pointer">添付情報</summary>
+            <div class="flex mb-2">
+              <button
+                type="button"
+                class="px-4 py-1 bg-gray-300 rounded hover:bg-gray-400 disabled:opacity-50 mr-2"
+                id="append-template-git-diff"
+                onclick="handleTemplate('git-diff')"
+              >
+                git diff
+              </button>
+              <button
+                type="button"
+                class="px-4 py-1 bg-gray-300 rounded hover:bg-gray-400 disabled:opacity-50 mr-2"
+                id="append-template-actions-log"
+                onclick="handleTemplate('actions-log')"
+              >
+                actions log
+              </button>
+              <button
+                type="button"
+                class="px-4 py-1 bg-gray-300 rounded hover:bg-gray-400 disabled:opacity-50 mr-2"
+                id="append-template-clear"
+                onclick="handleTemplate('clear')"
+              >
+                clear
+              </button>
+            </div>
+            <div class="mb-2 flex flex-row justify-between">
+              <input
+                type="text"
+                class="w-full px-2 py-1 border border-gray-300 rounded"
+                placeholder="見出し"
+                id="append-headding"
+              />
+            </div>
+            <div class="mb-2 flex flex-row justify-between">
+              <textarea
+                class="w-full px-2 py-1 border border-gray-300 rounded"
+                placeholder="テキスト"
+                rows="5"
+                id="append-text"
+              ></textarea>
+            </div>
+            <div class="mb-2 flex flex-row justify-between">
+              <textarea
+                class="w-full px-2 py-1 border border-gray-300 rounded"
+                placeholder="コード"
+                rows="5"
+                id="append-code"
+              ></textarea>
+            </div>
+          </details>
+          <div class="mb-2 flex flex-row justify-between">
+            <div class="w-1/2">
+              <input
+                type="submit"
+                class="px-4 py-2 bg-blue-500 text-white rounded hover:bg-blue-600 disabled:opacity-50"
+                id="run-button"
+                onclick="handleRun()"
+                value="Run"
+              />
+            </div>
+            <div class="w-1/2 flex justify-end">
+              <select
+                class="px-2 py-1 border border-gray-300 rounded"
+                id="file-format"
+              >
+                <option value="document">Document</option>
+                <option value="html">HTML</option>
+                <option value="markdown">Markdown</option>
+                <option value="pdf">PDF</option>
+              </select>
+            </div>
+          </div>
+        </form>
+        <div>
+          <div
+            class="w-full px-2 py-1 border border-gray-300 rounded"
+            id="response-message"
+            style="display: none"
+          >
+            <ul>
+              <li>
+                完了(<span
+                  id="response-message-text"
+                  class="text-green-600"
+                ></span
+                >)
+              </li>
+              <li class="flex">
+                <a
+                  href="https://drive.google.com/drive/my-drive"
+                  target="_blank"
+                  class="text-blue-600 bg-sky-100 rounded mr-1"
+                  rel="noopener noreferrer"
+                  id="response-message-link"
+                >
+                  <span id="response-message-file-name"></span>
+                </a>
+                <button
+                  id="response-message-copy-button"
+                  class="flex"
+                  onclick="handleCopyFileName()"
+                >
+                  <svg
+                    xmlns="http://www.w3.org/2000/svg"
+                    height="24px"
+                    viewBox="0 -960 960 960"
+                    width="24px"
+                    fill="#5f6368"
+                    style="display: inline-block; vertical-align: middle"
+                  >
+                    <!-- google / material-design-icons -->
+                    <!-- license: https://www.apache.org/licenses/LICENSE-2.0.txt-->
+                    <path
+                      d="M360-240q-33 0-56.5-23.5T280-320v-480q0-33 23.5-56.5T360-880h360q33 0 56.5 23.5T800-800v480q0 33-23.5 56.5T720-240H360Zm0-80h360v-480H360v480ZM200-80q-33 0-56.5-23.5T120-160v-560h80v560h440v80H200Zm160-240v-480 480Z"
+                    />
+                  </svg>
+                  <span
+                    id="response-message-copy-done-label"
+                    class="text-gray-100 bg-gray-800 rounded"
+                    style="display: none"
+                  >
+                    ✔ コピー
+                  </span>
+                </button>
+              </li>
+            </ul>
+          </div>
+          <div
+            class="w-full px-2 py-1 border border-gray-300 rounded"
+            id="response-error"
+            style="display: none"
+          >
+            <span class="text-red-600" id="response-error-text"></span>
+          </div>
+        </div>
+      </div>
+    </div>
+  </body>
+  <script>
+    function disableInputs() {
+      document.getElementById('run-button').disabled = true
+      document
+        .querySelectorAll('form input, form button, form textarea, form select')
+        .forEach((element) => {
+          element.disabled = true
+        })
+    }
+    function enableInputs() {
+      document.getElementById('run-button').disabled = false
+      document
+        .querySelectorAll('form input, form button, form textarea, form select')
+        .forEach((element) => {
+          element.disabled = false
+        })
+    }
+    function handleRun() {
+      disableInputs()
+      resetResponse()
+      new Promise((resolve, reject) => {
+        const repoText = document.getElementById('repo-url').value
+        const fileFormat = document.getElementById('file-format').value
+        const appendSections = document.getElementById('append-info').open
+          ? [
+              {
+                heading:
+                  document.getElementById('append-headding').value.trim() || '',
+                paragraph:
+                  document.getElementById('append-text').value.trim() || '',
+                codeBlock:
+                  document.getElementById('append-code').value.trim() || ''
+              }
+            ].filter((section) => {
+              return (
+                section.heading !== '' &&
+                (section.paragraph !== '' || section.codeBlock !== '')
+              )
+            })
+          : []
+        google.script.run
+          .withSuccessHandler(function (message) {
+            setResponseMessage(message)
+            resolve()
+          })
+          .withFailureHandler(function (error) {
+            setResponseError(error.message)
+            // reject()
+            resolve()
+          })
+          .repoToFile({
+            url: repoText,
+            fileFormat: fileFormat.toLowerCase(),
+            appendSections
+          })
+      }).then(() => {
+        enableInputs()
+      })
+    }
+    function handleTemplate(kind) {
+      switch (kind) {
+        case 'git-diff':
+          document.getElementById('append-headding').value = '添付情報'
+          document.getElementById('append-text').value =
+            '次のコードは、リポジトリへの変更箇所を git diff で表示したものです。'
+          document.getElementById('append-code').value = ''
+          break
+        case 'actions-log':
+          document.getElementById('append-headding').value = '添付情報'
+          document.getElementById('append-text').value =
+            '次のコードは、リポジトリのワークフローを実行したログです。'
+          document.getElementById('append-code').value = ''
+          break
+        case 'clear':
+          document.getElementById('append-headding').value = ''
+          document.getElementById('append-text').value = ''
+          document.getElementById('append-code').value = ''
+          break
+      }
+    }
+    function resetResponse() {
+      document.getElementById('response-message').style.display = 'none'
+      document.getElementById('response-error').style.display = 'none'
+
+      document.getElementById('response-message-text').textContent = ''
+      document.getElementById('response-message-link').href =
+        'https://drive.google.com/drive/my-drive'
+
+      document.getElementById('response-error-text').textContent = ''
+    }
+    function setResponseMessage(message) {
+      document.getElementById('response-error').style.display = 'none'
+
+      document.getElementById('response-message-text').textContent =
+        message.done
+      document.getElementById('response-message-link').href = message.url
+      document.getElementById('response-message-file-name').textContent =
+        message.fileName
+
+      document.getElementById('response-error-text').textContent = ''
+
+      document.getElementById('response-message').style.display = 'block'
+    }
+    function setResponseError(error) {
+      document.getElementById('response-message').style.display = 'none'
+
+      document.getElementById('response-message-text').textContent = ''
+
+      document.getElementById('response-error-text').textContent = error
+
+      document.getElementById('response-error').style.display = 'block'
+    }
+    function handleCopyFileName() {
+      navigator.clipboard.writeText(
+        document.getElementById('response-message-file-name').textContent.trim()
+      )
+      const label = document.getElementById('response-message-copy-done-label')
+      label.style.display = 'block'
+      setTimeout(() => {
+        label.style.display = 'none'
+      }, 1000)
+    }
+  </script>
+</html>

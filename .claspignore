@@ -5,6 +5,7 @@
 !appsscript.json
 # and our transpiled code
 !build/*.js
+!build/static/**
 
 # ignore even valid files if in…
 .git/**
