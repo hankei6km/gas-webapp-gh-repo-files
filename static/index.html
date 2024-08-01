@@ -6,5 +6,52 @@
   <body>
     <h1>Welcome to My Website</h1>
     <p>テスト 10</p>
+    <div class="block form-group">
+      <textarea class="width-100" id="prompt-textarea" rows="1"></textarea>
+    </div>
+    <div class="block">
+      <button class="action" id="run-button" onclick="handleRun()">Run</button>
+    </div>
+    <div class="block form-group">
+      <textarea class="width-100" id="response-textarea" rows="15"></textarea>
+    </div>
   </body>
+  <script>
+    function disableInputs() {
+      document.getElementById('prompt-textarea').disabled = true
+      document.getElementById('run-button').disabled = true
+    }
+    function enableInputs() {
+      document.getElementById('prompt-textarea').disabled = false
+      document.getElementById('run-button').disabled = false
+    }
+    function handleRun() {
+      disableInputs()
+      const promptText = document.getElementById('prompt-textarea').value
+      new Promise((resolve, reject) => {
+        const responseEl = document.getElementById('response-textarea')
+        responseEl.value = 'test<br>test'
+        resolve()
+        //google.script.run
+        //  .withSuccessHandler(function (responseText) {
+        //    const responseEl = document.getElementById('response-textarea')
+        //    responseEl.value = responseText
+        //    resolve()
+        //  })
+        //  .withFailureHandler(function (error) {
+        //    const responseEl = document.getElementById('response-textarea')
+        //    responseEl.value = error.message
+        //    // reject()
+        //    resolve()
+        //  })
+        //  .doPrompt(promptText)
+      }).then(() => {
+        enableInputs()
+      })
+    }
+    function handleClear() {
+      document.getElementById('prompt-textarea').value = ''
+      document.getElementById('response-textarea').value = ''
+    }
+  </script>
 </html>
