@@ -32,19 +32,19 @@
         const responseEl = document.getElementById('response-textarea')
         responseEl.value = 'test<br>test'
         resolve()
-        //google.script.run
-        //  .withSuccessHandler(function (responseText) {
-        //    const responseEl = document.getElementById('response-textarea')
-        //    responseEl.value = responseText
-        //    resolve()
-        //  })
-        //  .withFailureHandler(function (error) {
-        //    const responseEl = document.getElementById('response-textarea')
-        //    responseEl.value = error.message
-        //    // reject()
-        //    resolve()
-        //  })
-        //  .doPrompt(promptText)
+        google.script.run
+          .withSuccessHandler(function (responseText) {
+            const responseEl = document.getElementById('response-textarea')
+            responseEl.value = responseText
+            resolve()
+          })
+          .withFailureHandler(function (error) {
+            const responseEl = document.getElementById('response-textarea')
+            responseEl.value = error.message
+            // reject()
+            resolve()
+          })
+          .repoToFile()
       }).then(() => {
         enableInputs()
       })

@@ -8,10 +8,6 @@
 
 'use strict'
 
-function chk() {
-  return _entry_point_.WebappGhRepoFiles.chk()
-}
-
 /**
  * static path を取得する。とりあえず作成、あとでライブラリ側に移すかも。
  */
@@ -22,4 +18,14 @@ function staticPath_(u) {
 
 function doGet() {
   return HtmlService.createHtmlOutputFromFile(staticPath_('index.html'))
+}
+
+async function repoToFile() {
+  try{
+  await _entry_point_.WebappGhRepoFiles.repoToFile()
+  }catch(e){
+    console.error(e)
+    return e
+  }
+  return 'done'
 }
