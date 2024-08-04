@@ -49,8 +49,8 @@ export class RepoUrl {
           this._ref = path.slice(2).join('/')
           return
         }
-        throw new Error(`Invalid URL: url: ${this.url}`)
       }
+      throw new Error(`Invalid path:${JSON.stringify(path, null, 2)}`)
     } catch (e) {
       throw new Error(`Invalid URL: url: ${this.url}, error: ${e}`)
     }

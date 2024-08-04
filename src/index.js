@@ -25,6 +25,6 @@ async function repoToFile(opts) {
     return await _entry_point_.WebappGhRepoFiles.repoToFile(opts)
   } catch (e) {
     console.error(e)
-    return e
+    throw e.toString()
   }
 }
