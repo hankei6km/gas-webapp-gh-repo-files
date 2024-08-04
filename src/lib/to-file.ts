@@ -1,14 +1,11 @@
+type ToFileRes = { id: string; done: 'created' | 'updated' | 'none' }
 export async function toFile(
-  repoOpts: GhRepoFilesClient.ClientOpts,
+  client: GhRepoFilesClient.Client,
   opts: {
     folderId: string
     fileFormat?: 'document' | 'html' | 'pdf' | 'markdown'
-    description?: string
-    pushedAt?: number
   }
-) {
-  console.log('start')
-
+): Promise<ToFileRes> {
   const [dataMimeType, fileMimeType, fileExt] = (() => {
     if (
       typeof opts.fileFormat === 'undefined' ||
@@ -25,42 +22,29 @@ export async function toFile(
     return ['text/plain', 'text/plain', 'txt']
   })()
 
-  const c = new (GhRepoFiles.getGasClient())(repoOpts)
-  if (opts.description) {
-    c.description = opts.description
-  }
-  //console.log(t)
-  const fileName = c.documentName + `${fileExt && `.${fileExt}`}`
+  const fileName = client.documentName + `${fileExt && `.${fileExt}`}`
   const existFileId = getExistFileId_(opts.folderId, fileName)
-  if (existFileId) {
-    const file = DriveApp.getFileById(existFileId)
-    const updated = new Date(file.getLastUpdated().toString()).valueOf()
-    if (opts.pushedAt && opts.pushedAt < updated) {
-      // push されている分は更新されているとみなす。
-      //(Google Document のファイルはメタ情報の更新でもタイムスタンプが更新されれるので絶対ではない)
-      console.log('already updated')
-      return
-    }
-  }
 
   const body =
     dataMimeType === 'text/html'
-      ? await GhRepoFiles.filesToHtml(c)
-      : await GhRepoFiles.filesToMarkdown(c)
+      ? await GhRepoFiles.filesToHtml(client)
+      : await GhRepoFiles.filesToMarkdown(client)
   const mediaData = Utilities.newBlob('')
     .setDataFromString(body, 'UTF-8')
     .setContentType(dataMimeType)
 
-  let res = {}
+  const res: ToFileRes = { id: '', done: 'none' }
   if (existFileId) {
-    console.log('- update')
     const resource = {
       title: fileName
     }
     // v3 の型定義はないらしいので、とりあえずany
-    res = Drive.Files?.update(resource, existFileId, mediaData) || {}
+    const updateRes =
+      Drive.Files?.update(resource, existFileId, mediaData) || {}
+
+    res.id = updateRes?.id || ''
+    res.done = res.id ? 'updated' : 'none'
   } else {
-    console.log('- create')
     // https://stackoverflow.com/questions/77752561/how-to-convert-docx-files-to-google-docs-with-apps-script-2024-drive-api-v3
     const resource = {
       name: fileName,
@@ -68,11 +52,12 @@ export async function toFile(
       mimeType: fileMimeType
     }
     // v3 の型定義はないらしいので、とりあえずany
-    res = (Drive.Files as any).create(resource, mediaData)
+    const createdRess = (Drive.Files as any).create(resource, mediaData)
+    res.id = createdRess?.id || ''
+    res.done = res.id ? 'created' : 'none'
   }
 
-  console.log(res)
-  console.log('end')
+  return res
 }
 
 const escapeQueryStringRegExp_ = new RegExp("'", 'g')
