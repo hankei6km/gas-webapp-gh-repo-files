@@ -20,12 +20,11 @@ function doGet() {
   return HtmlService.createHtmlOutputFromFile(staticPath_('index.html'))
 }
 
-async function repoToFile() {
-  try{
-  await _entry_point_.WebappGhRepoFiles.repoToFile()
-  }catch(e){
+async function repoToFile(opts) {
+  try {
+    return await _entry_point_.WebappGhRepoFiles.repoToFile(opts)
+  } catch (e) {
     console.error(e)
     return e
   }
-  return 'done'
 }
