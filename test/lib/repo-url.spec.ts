@@ -53,4 +53,14 @@ describe('RepoUrl', () => {
     expect(url.repo).toBe('gas-webapp-gh-repo-files')
     expect(url.ref).toBe('test/webapp')
   })
+  it('should throw error(https://github.com/hankei6km)', () => {
+    expect(() => {
+      new RepoUrl('https://github.com/hankei6km')
+    }).toThrow('Invalid URL: url:')
+  })
+  it('should throw error(hankei6km)', () => {
+    expect(() => {
+      new RepoUrl('hankei6km')
+    }).toThrow('Invalid URL: url:')
+  })
 })
