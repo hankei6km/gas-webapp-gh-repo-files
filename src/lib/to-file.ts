@@ -1,9 +1,10 @@
+import type { WebappGhRepoFiles } from '../webapp-gh-repo-file.js'
 type ToFileRes = { id: string; done: 'created' | 'updated' | 'none' }
 export async function toFile(
   client: GhRepoFilesClient.Client,
   opts: {
     folderId: string
-    fileFormat?: 'document' | 'html' | 'pdf' | 'markdown'
+    fileFormat?: WebappGhRepoFiles.FileFormat
   }
 ): Promise<ToFileRes> {
   const [dataMimeType, fileMimeType, fileExt] = (() => {

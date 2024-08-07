@@ -3,7 +3,11 @@ import { toFile } from './lib/to-file.js'
 import { RepoUrl } from './lib/repo-url.js'
 
 export namespace WebappGhRepoFiles {
-  export async function repoToFile(opts: { url: string }) {
+  export type FileFormat = 'document' | 'html' | 'pdf' | 'markdown'
+  export async function repoToFile(opts: {
+    url: string
+    fileFormat?: FileFormat
+  }) {
     const props = PropertiesService.getScriptProperties()
     const folderId = props.getProperty('FOLDER_ID') || ''
 
@@ -12,8 +16,6 @@ export namespace WebappGhRepoFiles {
       owner,
       repo,
       ref
-      //owner: 'hankei6km',
-      //repo: 'gas-gh-repo-files'
     })
     //if (opts.description) {
     //  client.description = opts.description
@@ -21,8 +23,8 @@ export namespace WebappGhRepoFiles {
 
     try {
       const res = await toFile(client, {
-        folderId
-        //fileFormat: 'pdf'
+        folderId,
+        fileFormat: opts.fileFormat
       })
       if (res.id && res.done !== 'none') {
         const url = new Url('https://drive.google.com')
