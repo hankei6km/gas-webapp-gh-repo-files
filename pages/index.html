@@ -1,0 +1,96 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <title>My Website</title>
+    <meta charset="UTF-8" />
+    <!--https://qiita.com/takatama/items/96c9fa5fbf0fe18427a3 -->
+    <style>
+      <?!= HtmlService.createHtmlOutputFromFile(staticPath_('index.css.html')).getContent(); ?>
+    </style>
+  </head>
+  <body class="bg-gray-100">
+    <div class="flex justify-center">
+      <div class="w-800 m-4">
+        <h1 class="text-2xl font-bold mb-4">
+          リポジトリのファイルツリーを Google ドライブへ保存
+        </h1>
+        <form class="mb-4">
+          <div class="mb-2 flex flex-row justify-between">
+            <input
+              type="text"
+              class="w-full px-2 py-1 border border-gray-300 rounded"
+              id="repo-url"
+            />
+          </div>
+          <div class="mb-2 flex flex-row justify-between">
+            <div class="w-1/2">
+              <button
+                class="px-4 py-2 bg-blue-500 text-white rounded hover:bg-blue-600 disabled:opacity-50"
+                id="run-button"
+                onclick="handleRun()"
+              >
+                Run
+              </button>
+            </div>
+            <div class="w-1/2 flex justify-end">
+              <select
+                class="px-2 py-1 border border-gray-300 rounded"
+                id="file-format"
+              >
+                <option value="document">Document</option>
+                <option value="html">HTML</option>
+                <option value="markdown">Markdown</option>
+                <option value="pdf">PDF</option>
+              </select>
+            </div>
+          </div>
+        </form>
+        <div>
+          <textarea
+            class="w-full px-2 py-1 border border-gray-300 rounded"
+            id="response-textarea"
+            rows="15"
+          ></textarea>
+        </div>
+      </div>
+    </div>
+  </body>
+  <script>
+    function disableInputs() {
+      document.getElementById('repo-url').disabled = true
+      document.getElementById('run-button').disabled = true
+    }
+    function enableInputs() {
+      document.getElementById('repo-url').disabled = false
+      document.getElementById('run-button').disabled = false
+    }
+    function handleRun() {
+      disableInputs()
+      new Promise((resolve, reject) => {
+        const repoText = document.getElementById('repo-url').value
+        const fileFormat = document.getElementById('file-format').value
+        const responseEl = document.getElementById('response-textarea')
+        responseEl.value = 'test<br>test'
+        google.script.run
+          .withSuccessHandler(function (responseText) {
+            const responseEl = document.getElementById('response-textarea')
+            responseEl.value = JSON.stringify(responseText, null, 2)
+            resolve()
+          })
+          .withFailureHandler(function (error) {
+            const responseEl = document.getElementById('response-textarea')
+            responseEl.value = error.message
+            // reject()
+            resolve()
+          })
+          .repoToFile({ url: repoText, fileFormat: fileFormat.toLowerCase() })
+      }).then(() => {
+        enableInputs()
+      })
+    }
+    function handleClear() {
+      document.getElementById('repo-url').value = ''
+      document.getElementById('response-textarea').value = ''
+    }
+  </script>
+</html>
