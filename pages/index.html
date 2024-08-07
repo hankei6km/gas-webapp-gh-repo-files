@@ -46,11 +46,31 @@
           </div>
         </form>
         <div>
-          <textarea
+          <div
             class="w-full px-2 py-1 border border-gray-300 rounded"
-            id="response-textarea"
-            rows="15"
-          ></textarea>
+            id="response-message"
+            style="display: none"
+          >
+            <span style="color: green"
+              ><span id="response-message-text"></span
+            ></span>
+            <a
+              href="https://drive.google.com/drive/my-drive"
+              target="_blank"
+              rel="noopener noreferrer"
+              id="response-message-link"
+              >ファイルを表示</a
+            >
+          </div>
+          <div
+            class="w-full px-2 py-1 border border-gray-300 rounded"
+            id="response-error"
+            style="display: none"
+          >
+            <span style="color: red"
+              ><span id="response-error-text"></span
+            ></span>
+          </div>
         </div>
       </div>
     </div>
@@ -66,20 +86,17 @@
     }
     function handleRun() {
       disableInputs()
+      resetResponse()
       new Promise((resolve, reject) => {
         const repoText = document.getElementById('repo-url').value
         const fileFormat = document.getElementById('file-format').value
-        const responseEl = document.getElementById('response-textarea')
-        responseEl.value = 'test<br>test'
         google.script.run
-          .withSuccessHandler(function (responseText) {
-            const responseEl = document.getElementById('response-textarea')
-            responseEl.value = JSON.stringify(responseText, null, 2)
+          .withSuccessHandler(function (message) {
+            setResponseMessage(message)
             resolve()
           })
           .withFailureHandler(function (error) {
-            const responseEl = document.getElementById('response-textarea')
-            responseEl.value = error.message
+            setResponseError(error.message)
             // reject()
             resolve()
           })
@@ -88,9 +105,27 @@
         enableInputs()
       })
     }
-    function handleClear() {
-      document.getElementById('repo-url').value = ''
-      document.getElementById('response-textarea').value = ''
+    function resetResponse() {
+      document.getElementById('response-message').style.display = 'none'
+      document.getElementById('response-message-text').textContent = ''
+      document.getElementById('response-message-link').href =
+        'https://drive.google.com/drive/my-drive'
+      document.getElementById('response-error').style.display = 'none'
+      document.getElementById('response-error-text').textContent = ''
+    }
+    function setResponseMessage(message) {
+      document.getElementById('response-message').style.display = 'block'
+      document.getElementById('response-message-text').textContent =
+        message.done
+      document.getElementById('response-message-link').href = message.url
+      document.getElementById('response-error').style.display = 'none'
+      document.getElementById('response-error-text').textContent = ''
+    }
+    function setResponseError(error) {
+      document.getElementById('response-message').style.display = 'none'
+      document.getElementById('response-message-text').textContent = ''
+      document.getElementById('response-error').style.display = 'block'
+      document.getElementById('response-error-text').textContent = error
     }
   </script>
 </html>
