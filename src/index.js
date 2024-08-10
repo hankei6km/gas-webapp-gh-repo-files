@@ -17,7 +17,7 @@ function staticPath_(u) {
 }
 
 function pageTitle_() {
-  return 'リポジトリ<br>のファイルツリーを Google ドライブへ保存'
+  return 'リポジトリのファイルツリーを Google ドライブへ保存'
 }
 
 function doGet(e) {
