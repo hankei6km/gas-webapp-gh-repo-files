@@ -16,13 +16,18 @@ function staticPath_(u) {
   return `build/static/${u}`
 }
 
+function pageTitle_() {
+  return 'リポジトリ<br>のファイルツリーを Google ドライブへ保存'
+}
+
 function doGet(e) {
   const path = e.pathInfo || 'index.html'
-  console.log(JSON.stringify(e, null, 2))
+  // console.log(JSON.stringify(e, null, 2))
   if (path === 'index.html') {
-    var template = HtmlService.createTemplateFromFile(staticPath_(path))
+    const template = HtmlService.createTemplateFromFile(staticPath_(path))
     template.url = ScriptApp.getService().getUrl()
-    var htmlOutput = template.evaluate()
+    const htmlOutput = template.evaluate()
+    htmlOutput.setTitle(pageTitle_())
     htmlOutput.addMetaTag('viewport', 'width=device-width, initial-scale=1')
     return htmlOutput
   }

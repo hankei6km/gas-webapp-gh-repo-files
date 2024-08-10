@@ -1,5 +1,9 @@
 import type { WebappGhRepoFiles } from '../webapp-gh-repo-file.js'
-type ToFileRes = { id: string; done: 'created' | 'updated' | 'none' }
+type ToFileRes = {
+  id: string
+  done: 'created' | 'updated' | 'none'
+  fileName: string
+}
 export async function toFile(
   client: GhRepoFilesClient.Client,
   opts: {
@@ -34,7 +38,7 @@ export async function toFile(
     .setDataFromString(body, 'UTF-8')
     .setContentType(dataMimeType)
 
-  const res: ToFileRes = { id: '', done: 'none' }
+  const res: ToFileRes = { id: '', done: 'none', fileName }
   if (existFileId) {
     const resource = {
       title: fileName

@@ -10,9 +10,9 @@
   </head>
   <body class="bg-gray-100">
     <div class="flex justify-center">
-      <div class="w-800 m-4">
+      <div class="w-[640px] m-4">
         <h1 class="text-2xl font-bold mb-4">
-          リポジトリのファイルツリーを Google ドライブへ保存
+          <?= pageTitle_(); ?>
         </h1>
         <form class="mb-4">
           <div class="mb-2 flex flex-row justify-between">
@@ -51,25 +51,60 @@
             id="response-message"
             style="display: none"
           >
-            <span style="color: green"
-              ><span id="response-message-text"></span
-            ></span>
-            <a
-              href="https://drive.google.com/drive/my-drive"
-              target="_blank"
-              rel="noopener noreferrer"
-              id="response-message-link"
-              >ファイルを表示</a
-            >
+            <ul>
+              <li>
+                完了(<span
+                  id="response-message-text"
+                  class="text-green-600"
+                ></span
+                >)
+              </li>
+              <li class="flex">
+                <a
+                  href="https://drive.google.com/drive/my-drive"
+                  target="_blank"
+                  class="text-blue-600 bg-sky-100 rounded mr-1"
+                  rel="noopener noreferrer"
+                  id="response-message-link"
+                >
+                  <span id="response-message-file-name"></span>
+                </a>
+                <button
+                  id="response-message-copy-button"
+                  class="flex"
+                  onclick="handleCopyFileName()"
+                >
+                  <svg
+                    xmlns="http://www.w3.org/2000/svg"
+                    height="24px"
+                    viewBox="0 -960 960 960"
+                    width="24px"
+                    fill="#5f6368"
+                    style="display: inline-block; vertical-align: middle"
+                  >
+                    <!-- google / material-design-icons -->
+                    <!-- license: https://www.apache.org/licenses/LICENSE-2.0.txt-->
+                    <path
+                      d="M360-240q-33 0-56.5-23.5T280-320v-480q0-33 23.5-56.5T360-880h360q33 0 56.5 23.5T800-800v480q0 33-23.5 56.5T720-240H360Zm0-80h360v-480H360v480ZM200-80q-33 0-56.5-23.5T120-160v-560h80v560h440v80H200Zm160-240v-480 480Z"
+                    />
+                  </svg>
+                  <span
+                    id="response-message-copy-done-label"
+                    class="text-gray-100 bg-gray-800 rounded"
+                    style="display: none"
+                  >
+                    ✔ コピー
+                  </span>
+                </button>
+              </li>
+            </ul>
           </div>
           <div
             class="w-full px-2 py-1 border border-gray-300 rounded"
             id="response-error"
             style="display: none"
           >
-            <span style="color: red"
-              ><span id="response-error-text"></span
-            ></span>
+            <span class="text-red-600" id="response-error-text"></span>
           </div>
         </div>
       </div>
@@ -107,25 +142,45 @@
     }
     function resetResponse() {
       document.getElementById('response-message').style.display = 'none'
+      document.getElementById('response-error').style.display = 'none'
+
       document.getElementById('response-message-text').textContent = ''
       document.getElementById('response-message-link').href =
         'https://drive.google.com/drive/my-drive'
-      document.getElementById('response-error').style.display = 'none'
+
       document.getElementById('response-error-text').textContent = ''
     }
     function setResponseMessage(message) {
-      document.getElementById('response-message').style.display = 'block'
+      document.getElementById('response-error').style.display = 'none'
+
       document.getElementById('response-message-text').textContent =
         message.done
       document.getElementById('response-message-link').href = message.url
-      document.getElementById('response-error').style.display = 'none'
+      document.getElementById('response-message-file-name').textContent =
+        message.fileName
+
       document.getElementById('response-error-text').textContent = ''
+
+      document.getElementById('response-message').style.display = 'block'
     }
     function setResponseError(error) {
       document.getElementById('response-message').style.display = 'none'
+
       document.getElementById('response-message-text').textContent = ''
-      document.getElementById('response-error').style.display = 'block'
+
       document.getElementById('response-error-text').textContent = error
+
+      document.getElementById('response-error').style.display = 'block'
+    }
+    function handleCopyFileName() {
+      navigator.clipboard.writeText(
+        document.getElementById('response-message-file-name').textContent.trim()
+      )
+      const label = document.getElementById('response-message-copy-done-label')
+      label.style.display = 'block'
+      setTimeout(() => {
+        label.style.display = 'none'
+      }, 1000)
     }
   </script>
 </html>

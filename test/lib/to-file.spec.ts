@@ -45,7 +45,8 @@ describe('toFile', () => {
 
     expect(await toFile(client as any, { folderId: 'dummy' })).toEqual({
       id: 'created id',
-      done: 'created'
+      done: 'created',
+      fileName: 'owner repo main'
     })
 
     expect((global.Drive.Files as any).list as any).toHaveBeenCalledWith({
@@ -79,7 +80,8 @@ describe('toFile', () => {
 
     expect(await toFile(client as any, { folderId: 'dummy' })).toEqual({
       id: 'updated id',
-      done: 'updated'
+      done: 'updated',
+      fileName: 'owner repo main'
     })
 
     expect((global.Drive.Files as any).list as any).toHaveBeenCalledWith({
@@ -109,7 +111,8 @@ describe('toFile', () => {
       await toFile(client as any, { folderId: 'dummy', fileFormat: 'html' })
     ).toEqual({
       id: 'created id',
-      done: 'created'
+      done: 'created',
+      fileName: 'owner repo main.html'
     })
 
     expect((global.Drive.Files as any).list as any).toHaveBeenCalledWith({
@@ -145,7 +148,8 @@ describe('toFile', () => {
       await toFile(client as any, { folderId: 'dummy', fileFormat: 'html' })
     ).toEqual({
       id: 'updated id',
-      done: 'updated'
+      done: 'updated',
+      fileName: 'owner repo main.html'
     })
 
     expect((global.Drive.Files as any).list as any).toHaveBeenCalledWith({
@@ -175,7 +179,8 @@ describe('toFile', () => {
       await toFile(client as any, { folderId: 'dummy', fileFormat: 'markdown' })
     ).toEqual({
       id: 'created id',
-      done: 'created'
+      done: 'created',
+      fileName: 'owner repo main.md'
     })
 
     expect((global.Drive.Files as any).list as any).toHaveBeenCalledWith({
@@ -213,7 +218,8 @@ describe('toFile', () => {
       await toFile(client as any, { folderId: 'dummy', fileFormat: 'markdown' })
     ).toEqual({
       id: 'updated id',
-      done: 'updated'
+      done: 'updated',
+      fileName: 'owner repo main.md'
     })
 
     expect((global.Drive.Files as any).list as any).toHaveBeenCalledWith({
@@ -245,7 +251,8 @@ describe('toFile', () => {
       await toFile(client as any, { folderId: 'dummy', fileFormat: 'pdf' })
     ).toEqual({
       id: 'created id',
-      done: 'created'
+      done: 'created',
+      fileName: 'owner repo main.pdf'
     })
 
     expect((global.Drive.Files as any).list as any).toHaveBeenCalledWith({
@@ -281,7 +288,8 @@ describe('toFile', () => {
       await toFile(client as any, { folderId: 'dummy', fileFormat: 'pdf' })
     ).toEqual({
       id: 'updated id',
-      done: 'updated'
+      done: 'updated',
+      fileName: 'owner repo main.pdf'
     })
 
     expect((global.Drive.Files as any).list as any).toHaveBeenCalledWith({
@@ -312,7 +320,8 @@ describe('toFile', () => {
 
     expect(await toFile(client as any, { folderId: 'dummy' })).toEqual({
       id: 'created id',
-      done: 'created'
+      done: 'created',
+      fileName: "owner repo main's"
     })
 
     expect((global.Drive.Files as any).list as any).toHaveBeenCalledWith({

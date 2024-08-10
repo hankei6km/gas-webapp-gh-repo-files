@@ -10,7 +10,11 @@ jest.unstable_mockModule('../src/lib/to-file.js', () => {
         if (client.documentName.match(/error/)) {
           throw new Error('error')
         }
-        return { id: 'created-id', done: 'created' }
+        return {
+          id: 'created-id',
+          done: 'created',
+          fileName: client.documentName
+        }
       })
   }
 })
@@ -59,7 +63,8 @@ describe('repoToFile', () => {
     ).toEqual({
       url: 'https://drive.google.com/file/d/created-id/view?usp=sharing',
       id: 'created-id',
-      done: 'created'
+      done: 'created',
+      fileName: 'hankei6km gas-gh-repo-files main'
     })
     const client = (toFile as any).mock.calls[0][0]
     expect(client.owner).toEqual('hankei6km')
