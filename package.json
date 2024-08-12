@@ -47,7 +47,7 @@
   },
   "devDependencies": {
     "@hankei6km/files-to-licenses": "^0.1.1",
-    "@hankei6km/gas-gh-repo-files": "^0.5.0",
+    "@hankei6km/gas-gh-repo-files": "^0.8.0",
     "@types/google-apps-script": "^1.0.83",
     "@types/jest": "^29.5.12",
     "esbuild": "^0.23.0",
