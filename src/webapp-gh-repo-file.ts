@@ -1,12 +1,14 @@
 import Url from 'url-parse'
 import { toFile } from './lib/to-file.js'
 import { RepoUrl } from './lib/repo-url.js'
+import { type AppendSectionInfo } from './lib//append-sections.js'
 
 export namespace WebappGhRepoFiles {
   export type FileFormat = 'document' | 'html' | 'pdf' | 'markdown'
   export async function repoToFile(opts: {
     url: string
     fileFormat?: FileFormat
+    appendSections?: AppendSectionInfo[]
   }) {
     const props = PropertiesService.getScriptProperties()
     const folderId = props.getProperty('FOLDER_ID') || ''
@@ -24,7 +26,8 @@ export namespace WebappGhRepoFiles {
     try {
       const res = await toFile(client, {
         folderId,
-        fileFormat: opts.fileFormat
+        fileFormat: opts.fileFormat,
+        appendSections: opts.appendSections
       })
       if (res.id && res.done !== 'none') {
         const url = new Url('https://drive.google.com')

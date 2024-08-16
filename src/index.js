@@ -35,7 +35,7 @@ function doGet(e) {
 
 async function repoToFile(opts) {
   try {
-    return await _entry_point_.WebappGhRepoFiles.repoToFile(opts)
+    return _entry_point_.WebappGhRepoFiles.repoToFile(opts)
   } catch (e) {
     console.error(e)
     throw e.toString()

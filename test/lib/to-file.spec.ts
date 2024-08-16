@@ -19,10 +19,11 @@ describe('toFile', () => {
       }) as any
     } as any
     global.GhRepoFiles = {} as any
-    global.GhRepoFiles.filesToHtml = jest
+    global.GhRepoFiles.filesToHast = jest.fn().mockReturnValue([]) as any
+    global.GhRepoFiles.hastToHtml = jest
       .fn()
       .mockReturnValue('dummy html') as any
-    global.GhRepoFiles.filesToMarkdown = jest
+    global.GhRepoFiles.hastToMarkdown = jest
       .fn()
       .mockReturnValue('dummy markdown') as any
   })
@@ -52,8 +53,9 @@ describe('toFile', () => {
     expect((global.Drive.Files as any).list as any).toHaveBeenCalledWith({
       q: "name = 'owner repo main' and 'dummy' in parents and trashed=false"
     })
-    expect(global.GhRepoFiles.filesToHtml as any).toHaveBeenCalledWith(client)
-    expect(global.GhRepoFiles.filesToMarkdown as any).toHaveBeenCalledTimes(0)
+    expect(global.GhRepoFiles.filesToHast as any).toHaveBeenCalledWith(client)
+    expect(global.GhRepoFiles.hastToHtml as any).toHaveBeenCalledWith([])
+    expect(global.GhRepoFiles.hastToMarkdown as any).toHaveBeenCalledTimes(0)
     const blob = (global.Utilities.newBlob as jest.Mock).mock.results.pop()
     expect((blob as any)?.value.setContentType).toHaveBeenCalledWith(
       'text/html'
@@ -87,8 +89,9 @@ describe('toFile', () => {
     expect((global.Drive.Files as any).list as any).toHaveBeenCalledWith({
       q: "name = 'owner repo main' and 'dummy' in parents and trashed=false"
     })
-    expect(global.GhRepoFiles.filesToHtml as any).toHaveBeenCalledWith(client)
-    expect(global.GhRepoFiles.filesToMarkdown as any).toHaveBeenCalledTimes(0)
+    expect(global.GhRepoFiles.filesToHast as any).toHaveBeenCalledWith(client)
+    expect(global.GhRepoFiles.hastToHtml as any).toHaveBeenCalledWith([])
+    expect(global.GhRepoFiles.hastToMarkdown as any).toHaveBeenCalledTimes(0)
     const blob = (global.Utilities.newBlob as jest.Mock).mock.results.pop()
     expect((blob as any)?.value.setContentType).toHaveBeenCalledWith(
       'text/html'
@@ -102,6 +105,81 @@ describe('toFile', () => {
     expect(
       ((global.Drive.Files as any).update as any).mock.calls[0][0]
     ).toEqual({ title: 'owner repo main' })
+  })
+
+  it('save to google document file(appendSections)', async () => {
+    // appendSections は google document file でのみ確認
+    const client = new Client()
+
+    expect(
+      await toFile(client as any, {
+        folderId: 'dummy',
+        appendSections: [
+          {
+            heading: 'test1',
+            paragraph: 'test1 paragraph',
+            codeBlock: 'test1 codeBlock'
+          }
+        ]
+      })
+    ).toEqual({
+      id: 'created id',
+      done: 'created',
+      fileName: 'owner repo main (test1)'
+    })
+
+    expect((global.Drive.Files as any).list as any).toHaveBeenCalledWith({
+      q: "name = 'owner repo main (test1)' and 'dummy' in parents and trashed=false"
+    })
+    expect(global.GhRepoFiles.filesToHast as any).toHaveBeenCalledWith(client)
+    // appendSections を HTML へ変換するためにコールされる。
+    expect(global.GhRepoFiles.hastToHtml as any).toHaveBeenCalledWith({
+      children: [
+        {
+          children: [{ type: 'text', value: 'test1' }],
+          properties: {},
+          tagName: 'h2',
+          type: 'element'
+        },
+        {
+          children: [{ type: 'text', value: 'test1 paragraph' }],
+          properties: {},
+          tagName: 'p',
+          type: 'element'
+        },
+        {
+          children: [
+            {
+              children: [{ type: 'text', value: 'test1 codeBlock' }],
+              properties: {},
+              tagName: 'code',
+              type: 'element'
+            }
+          ],
+          properties: {},
+          tagName: 'pre',
+          type: 'element'
+        }
+      ],
+      type: 'root'
+    })
+    expect(global.GhRepoFiles.hastToMarkdown as any).toHaveBeenCalledTimes(0)
+    const blob = (global.Utilities.newBlob as jest.Mock).mock.results.pop()
+    expect((blob as any)?.value.setContentType).toHaveBeenCalledWith(
+      'text/html'
+    )
+    expect((blob as any)?.value.setDataFromString).toHaveBeenCalledWith(
+      'dummy html',
+      'UTF-8'
+    )
+    expect(
+      ((global.Drive.Files as any).create as any).mock.calls[0][0]
+    ).toEqual({
+      name: 'owner repo main (test1)',
+      mimeType: 'application/vnd.google-apps.document',
+      parents: ['dummy']
+    })
+    expect((global.Drive.Files as any).update as any).toHaveBeenCalledTimes(0)
   })
 
   it('save to html file(create)', async () => {
@@ -118,8 +196,9 @@ describe('toFile', () => {
     expect((global.Drive.Files as any).list as any).toHaveBeenCalledWith({
       q: "name = 'owner repo main.html' and 'dummy' in parents and trashed=false"
     })
-    expect(global.GhRepoFiles.filesToHtml as any).toHaveBeenCalledWith(client)
-    expect(global.GhRepoFiles.filesToMarkdown as any).toHaveBeenCalledTimes(0)
+    expect(global.GhRepoFiles.filesToHast as any).toHaveBeenCalledWith(client)
+    expect(global.GhRepoFiles.hastToHtml as any).toHaveBeenCalledWith([])
+    expect(global.GhRepoFiles.hastToMarkdown as any).toHaveBeenCalledTimes(0)
     const blob = (global.Utilities.newBlob as jest.Mock).mock.results.pop()
     expect((blob as any)?.value.setContentType).toHaveBeenCalledWith(
       'text/html'
@@ -155,8 +234,9 @@ describe('toFile', () => {
     expect((global.Drive.Files as any).list as any).toHaveBeenCalledWith({
       q: "name = 'owner repo main.html' and 'dummy' in parents and trashed=false"
     })
-    expect(global.GhRepoFiles.filesToHtml as any).toHaveBeenCalledWith(client)
-    expect(global.GhRepoFiles.filesToMarkdown as any).toHaveBeenCalledTimes(0)
+    expect(global.GhRepoFiles.filesToHast as any).toHaveBeenCalledWith(client)
+    expect(global.GhRepoFiles.hastToHtml as any).toHaveBeenCalledWith([])
+    expect(global.GhRepoFiles.hastToMarkdown as any).toHaveBeenCalledTimes(0)
     const blob = (global.Utilities.newBlob as jest.Mock).mock.results.pop()
     expect((blob as any)?.value.setContentType).toHaveBeenCalledWith(
       'text/html'
@@ -186,10 +266,9 @@ describe('toFile', () => {
     expect((global.Drive.Files as any).list as any).toHaveBeenCalledWith({
       q: "name = 'owner repo main.md' and 'dummy' in parents and trashed=false"
     })
-    expect(global.GhRepoFiles.filesToHtml as any).toHaveBeenCalledTimes(0)
-    expect(global.GhRepoFiles.filesToMarkdown as any).toHaveBeenCalledWith(
-      client
-    )
+    expect(global.GhRepoFiles.filesToHast as any).toHaveBeenCalledWith(client)
+    expect(global.GhRepoFiles.hastToHtml as any).toHaveBeenCalledTimes(0)
+    expect(global.GhRepoFiles.hastToMarkdown as any).toHaveBeenCalledWith([])
     const blob = (global.Utilities.newBlob as jest.Mock).mock.results.pop()
     expect((blob as any)?.value.setContentType).toHaveBeenCalledWith(
       'text/plain'
@@ -225,10 +304,9 @@ describe('toFile', () => {
     expect((global.Drive.Files as any).list as any).toHaveBeenCalledWith({
       q: "name = 'owner repo main.md' and 'dummy' in parents and trashed=false"
     })
-    expect(global.GhRepoFiles.filesToHtml as any).toHaveBeenCalledTimes(0)
-    expect(global.GhRepoFiles.filesToMarkdown as any).toHaveBeenCalledWith(
-      client
-    )
+    expect(global.GhRepoFiles.filesToHast as any).toHaveBeenCalledWith(client)
+    expect(global.GhRepoFiles.hastToHtml as any).toHaveBeenCalledTimes(0)
+    expect(global.GhRepoFiles.hastToMarkdown as any).toHaveBeenCalledWith([])
     const blob = (global.Utilities.newBlob as jest.Mock).mock.results.pop()
     expect((blob as any)?.value.setContentType).toHaveBeenCalledWith(
       'text/plain'
@@ -258,8 +336,9 @@ describe('toFile', () => {
     expect((global.Drive.Files as any).list as any).toHaveBeenCalledWith({
       q: "name = 'owner repo main.pdf' and 'dummy' in parents and trashed=false"
     })
-    expect(global.GhRepoFiles.filesToHtml as any).toHaveBeenCalledWith(client)
-    expect(global.GhRepoFiles.filesToMarkdown as any).toHaveBeenCalledTimes(0)
+    expect(global.GhRepoFiles.filesToHast as any).toHaveBeenCalledWith(client)
+    expect(global.GhRepoFiles.hastToHtml as any).toHaveBeenCalledWith([])
+    expect(global.GhRepoFiles.hastToMarkdown as any).toHaveBeenCalledTimes(0)
     const blob = (global.Utilities.newBlob as jest.Mock).mock.results.pop()
     expect((blob as any)?.value.setContentType).toHaveBeenCalledWith(
       'text/html'
@@ -295,8 +374,9 @@ describe('toFile', () => {
     expect((global.Drive.Files as any).list as any).toHaveBeenCalledWith({
       q: "name = 'owner repo main.pdf' and 'dummy' in parents and trashed=false"
     })
-    expect(global.GhRepoFiles.filesToHtml as any).toHaveBeenCalledWith(client)
-    expect(global.GhRepoFiles.filesToMarkdown as any).toHaveBeenCalledTimes(0)
+    expect(global.GhRepoFiles.filesToHast as any).toHaveBeenCalledWith(client)
+    expect(global.GhRepoFiles.hastToHtml as any).toHaveBeenCalledWith([])
+    expect(global.GhRepoFiles.hastToMarkdown as any).toHaveBeenCalledTimes(0)
     const blob = (global.Utilities.newBlob as jest.Mock).mock.results.pop()
     expect((blob as any)?.value.setContentType).toHaveBeenCalledWith(
       'text/html'

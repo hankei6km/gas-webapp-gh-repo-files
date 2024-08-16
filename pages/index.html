@@ -19,18 +19,75 @@
             <input
               type="text"
               class="w-full px-2 py-1 border border-gray-300 rounded"
+              placeholder="URL(or owner/repo/ref)"
               id="repo-url"
             />
           </div>
+          <details
+            class="mb-4 px-2 py-2 bg-gray-200 rounded-md"
+            id="append-info"
+          >
+            <summary class="cursor-pointer">添付情報</summary>
+            <div class="flex mb-2">
+              <button
+                type="button"
+                class="px-4 py-1 bg-gray-300 rounded hover:bg-gray-400 disabled:opacity-50 mr-2"
+                id="append-template-git-diff"
+                onclick="handleTemplate('git-diff')"
+              >
+                git diff
+              </button>
+              <button
+                type="button"
+                class="px-4 py-1 bg-gray-300 rounded hover:bg-gray-400 disabled:opacity-50 mr-2"
+                id="append-template-actions-log"
+                onclick="handleTemplate('actions-log')"
+              >
+                actions log
+              </button>
+              <button
+                type="button"
+                class="px-4 py-1 bg-gray-300 rounded hover:bg-gray-400 disabled:opacity-50 mr-2"
+                id="append-template-clear"
+                onclick="handleTemplate('clear')"
+              >
+                clear
+              </button>
+            </div>
+            <div class="mb-2 flex flex-row justify-between">
+              <input
+                type="text"
+                class="w-full px-2 py-1 border border-gray-300 rounded"
+                placeholder="見出し"
+                id="append-headding"
+              />
+            </div>
+            <div class="mb-2 flex flex-row justify-between">
+              <textarea
+                class="w-full px-2 py-1 border border-gray-300 rounded"
+                placeholder="テキスト"
+                rows="5"
+                id="append-text"
+              ></textarea>
+            </div>
+            <div class="mb-2 flex flex-row justify-between">
+              <textarea
+                class="w-full px-2 py-1 border border-gray-300 rounded"
+                placeholder="コード"
+                rows="5"
+                id="append-code"
+              ></textarea>
+            </div>
+          </details>
           <div class="mb-2 flex flex-row justify-between">
             <div class="w-1/2">
-              <button
+              <input
+                type="submit"
                 class="px-4 py-2 bg-blue-500 text-white rounded hover:bg-blue-600 disabled:opacity-50"
                 id="run-button"
                 onclick="handleRun()"
-              >
-                Run
-              </button>
+                value="Run"
+              />
             </div>
             <div class="w-1/2 flex justify-end">
               <select
@@ -112,12 +169,20 @@
   </body>
   <script>
     function disableInputs() {
-      document.getElementById('repo-url').disabled = true
       document.getElementById('run-button').disabled = true
+      document
+        .querySelectorAll('form input, form button, form textarea, form select')
+        .forEach((button) => {
+          button.disabled = true
+        })
     }
     function enableInputs() {
-      document.getElementById('repo-url').disabled = false
       document.getElementById('run-button').disabled = false
+      document
+        .querySelectorAll('form input, form button, form textarea, form button')
+        .forEach((button) => {
+          button.disabled = false
+        })
     }
     function handleRun() {
       disableInputs()
@@ -125,6 +190,23 @@
       new Promise((resolve, reject) => {
         const repoText = document.getElementById('repo-url').value
         const fileFormat = document.getElementById('file-format').value
+        const appendSections = document.getElementById('append-info').open
+          ? [
+              {
+                heading:
+                  document.getElementById('append-headding').value.trim() || '',
+                paragraph:
+                  document.getElementById('append-text').value.trim() || '',
+                codeBlock:
+                  document.getElementById('append-code').value.trim() || ''
+              }
+            ].filter((section) => {
+              return (
+                section.heading !== '' &&
+                (section.paragraph !== '' || section.codeBlock !== '')
+              )
+            })
+          : []
         google.script.run
           .withSuccessHandler(function (message) {
             setResponseMessage(message)
@@ -135,10 +217,35 @@
             // reject()
             resolve()
           })
-          .repoToFile({ url: repoText, fileFormat: fileFormat.toLowerCase() })
+          .repoToFile({
+            url: repoText,
+            fileFormat: fileFormat.toLowerCase(),
+            appendSections
+          })
       }).then(() => {
         enableInputs()
       })
+    }
+    function handleTemplate(kind) {
+      switch (kind) {
+        case 'git-diff':
+          document.getElementById('append-headding').value = '添付情報'
+          document.getElementById('append-text').value =
+            '次のコードは、リポジトリへの変更箇所を git diff で表示したものです。'
+          document.getElementById('append-code').value = ''
+          break
+        case 'actions-log':
+          document.getElementById('append-headding').value = '添付情報'
+          document.getElementById('append-text').value =
+            '次のコードは、リポジトリのワークフローを実行したログです。'
+          document.getElementById('append-code').value = ''
+          break
+        case 'clear':
+          document.getElementById('append-headding').value = ''
+          document.getElementById('append-text').value = ''
+          document.getElementById('append-code').value = ''
+          break
+      }
     }
     function resetResponse() {
       document.getElementById('response-message').style.display = 'none'

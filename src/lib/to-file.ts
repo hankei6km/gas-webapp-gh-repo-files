@@ -1,15 +1,21 @@
-import type { WebappGhRepoFiles } from '../webapp-gh-repo-file.js'
+import { h } from 'hastscript'
+import { type Nodes } from 'hast'
+import { type WebappGhRepoFiles } from '../webapp-gh-repo-file.js'
+import { genAppendSections, type AppendSectionInfo } from './append-sections.js'
+
 type ToFileRes = {
   id: string
   done: 'created' | 'updated' | 'none'
   fileName: string
 }
+export type ToFileOpts = {
+  folderId: string
+  fileFormat?: WebappGhRepoFiles.FileFormat
+  appendSections?: AppendSectionInfo[]
+}
 export async function toFile(
   client: GhRepoFilesClient.Client,
-  opts: {
-    folderId: string
-    fileFormat?: WebappGhRepoFiles.FileFormat
-  }
+  opts: ToFileOpts
 ): Promise<ToFileRes> {
   const [dataMimeType, fileMimeType, fileExt] = (() => {
     if (
@@ -27,13 +33,22 @@ export async function toFile(
     return ['text/plain', 'text/plain', 'txt']
   })()
 
-  const fileName = client.documentName + `${fileExt && `.${fileExt}`}`
+  const appendTitless = (
+    opts.appendSections?.map((s) => `(${s.heading})`) || []
+  ).join(' ')
+  const fileName =
+    `${client.documentName}${appendTitless && ` ${appendTitless}`}` +
+    `${fileExt && `.${fileExt}`}`
   const existFileId = getExistFileId_(opts.folderId, fileName)
 
+  let hast: Nodes = await GhRepoFiles.filesToHast(client)
+  if (Array.isArray(opts.appendSections) && opts.appendSections.length > 0) {
+    hast = h(null, [hast, await genAppendSections(opts.appendSections)])
+  }
   const body =
     dataMimeType === 'text/html'
-      ? await GhRepoFiles.filesToHtml(client)
-      : await GhRepoFiles.filesToMarkdown(client)
+      ? await GhRepoFiles.hastToHtml(hast)
+      : await GhRepoFiles.hastToMarkdown(hast)
   const mediaData = Utilities.newBlob('')
     .setDataFromString(body, 'UTF-8')
     .setContentType(dataMimeType)
