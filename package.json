@@ -50,7 +50,7 @@
     "@hankei6km/gas-gh-repo-files": "^0.10.0",
     "@types/google-apps-script": "^1.0.83",
     "@types/jest": "^29.5.12",
-    "esbuild": "^0.23.0",
+    "esbuild": "^0.23.1",
     "jest": "^29.7.0",
     "rimraf": "^6.0.0",
     "ts-jest": "^29.2.4",
