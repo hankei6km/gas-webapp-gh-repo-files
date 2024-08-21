@@ -26,5 +26,10 @@ cp LICENSE "${BUILD_DIR}/LICENSE.txt"
 sed -e 's/^export \(declare namespace\)/\1/' -- "${BUILD_DIR}/src/${BASENAME}.d.ts" > "index.d.ts"
 rm "${BUILD_DIR}/src/${BASENAME}.d.ts"
 
+test -d "${BUILD_DIR}/static/" || mkdir "${BUILD_DIR}/static/"
+#cp -r "pages"/* "${BUILD_DIR}/static/"
+cp "pages/index.html" "${BUILD_DIR}/static/"
+tailwindcss -i pages/index.css -o  "${BUILD_DIR}/static/index.css.html"
+
 # 作業用ファイルなどを削除.
 rimraf "${OUT_MAIN}" "${BUILD_DIR}/src" "${BUILD_DIR}/test" "${BUILD_DIR}/src/main.js.map" 
