@@ -110,7 +110,7 @@ jobs:
       # matrix が rel のときのみ
       - name: Make archilve file
         if: ${{ matrix.environment == 'rel' }}
-        run: zip "./webapp-gh-repo-file.zip" build/*
+        run: zip "./webapp-gh-repo-file.zip" build/* build/static/*
 
       - name: Upload archive file to release Asset
         id: upload-release-asset
