@@ -94,9 +94,9 @@ jobs:
         run: |
           BODY_HEAD="$(echo "${BODY}" | head -n 1 | tr -d '\n')"
           if test -z "${DEPLOYMENT_ID}" ; then
-            echo run deploy -- --description "${BODY_HEAD}"
+            npm run deploy -- --description "${BODY_HEAD}"
           else
-            echo run deploy -- --description "${BODY_HEAD}" --deploymentId "${DEPLOYMENT_ID}"
+            npm run deploy -- --description "${BODY_HEAD}" --deploymentId "${DEPLOYMENT_ID}"
           fi
         env:
           BODY: ${{ github.event.release.body }}
