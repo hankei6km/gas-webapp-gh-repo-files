@@ -100,7 +100,7 @@ jobs:
           fi
         env:
           BODY: ${{ github.event.release.body }}
-          DEPLOYMENT_ID: $${{ secrets.DEPLOYMENT_ID }}
+          DEPLOYMENT_ID: ${{ secrets.DEPLOYMENT_ID }}
 
       # 念のため実行.
       - name: Cleanup files for clasp
