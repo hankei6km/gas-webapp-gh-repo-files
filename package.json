@@ -52,7 +52,7 @@
     "@types/google-apps-script": "^1.0.85",
     "@types/jest": "^30.0.0",
     "@types/url-parse": "^1.4.11",
-    "esbuild": "^0.25.11",
+    "esbuild": "^0.25.12",
     "hast-util-to-html": "^9.0.5",
     "jest": "^30.2.0",
     "rimraf": "^6.1.0",
